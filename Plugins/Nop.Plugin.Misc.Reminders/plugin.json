@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Misc",
+  "FriendlyName": "Customer Reminders",
+  "SystemName": "Misc.Reminders",
+  "Version": "1.0.0",
+  "SupportedVersions": [ "4.60" ],
+  "Author": "Jitesh Sureka",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Misc.Reminders.dll",
+  "Description": "This plugin sends reminders to customers for specific events via email or sms"
+}

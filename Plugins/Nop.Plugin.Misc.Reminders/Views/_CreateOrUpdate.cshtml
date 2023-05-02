@@ -1,0 +1,32 @@
+@model RemindersModel
+
+<div asp-validation-summary="All"></div>
+<input asp-for="Id" type="hidden" />
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <nop-tabs id="reminders-create-or-edit">
+                <nop-tab asp-name="tab-settings" asp-default="true" asp-title="Settings">
+                    @{
+                        await Html.RenderPartialAsync("~/Plugins/Misc.Reminders/Views/_CreateOrUpdate.ReminderSettings.cshtml", Model);
+                    }
+                </nop-tab>
+                <nop-tab asp-name="tab-message-template" asp-title="Message Template Tab">
+                    @{
+                        await Html.RenderPartialAsync("~/Plugins/Misc.Reminders/Views/_CreateOrUpdate.MessageTemplate.cshtml", Model.MessageTemplateModel);
+                    }
+                </nop-tab>
+
+@*                @if (Model.Id > 0)
+                {
+                    <nop-tab asp-name="tab-excluded-customers" asp-title="Excluded Customer List">
+                        @{
+                            await Html.RenderPartialAsync("_CreateOrUpdate.ReminderExcludedCustomers", Model);
+                        }
+                    </nop-tab>
+                }*@
+            </nop-tabs>
+        </div>
+    </div>
+</section>

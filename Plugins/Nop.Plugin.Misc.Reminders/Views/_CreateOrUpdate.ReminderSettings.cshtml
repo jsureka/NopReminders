@@ -1,0 +1,80 @@
+@model RemindersModel
+
+<div class="cards-group">
+    <div class="card card-default">
+        <div class="card-body">
+            <div class="form-group row" id="">
+                <div class="col-md-3">
+                    <nop-label asp-for="Enabled" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Enabled" asp-required="true" />
+                    <span asp-validation-for="Enabled"></span>
+                </div>
+            </div>
+            <div class="form-group row" id="">
+                <div class="col-md-3">
+                    <nop-label asp-for="Name" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Name" asp-required="true" />
+                    <span asp-validation-for="Name"></span>
+                </div>
+            </div>
+            <div class="form-group row" id="">
+                <div class="col-md-3">
+                    <nop-label asp-for="Store" />
+                </div>
+                <div class="col-md-9">
+                    <nop-select asp-for="StoreId" asp-items="Model.Store" asp-required="true" />
+                    <span asp-validation-for="StoreId"></span>
+                </div>
+            </div>
+            <div class="form-group row" id="">
+                <div class="col-md-3">
+                    <nop-label asp-for="ReminderRule" />
+                </div>
+                <div class="col-md-9">
+                    <nop-select asp-for="ReminderRuleId" asp-items="Model.ReminderRule" asp-required="true" />
+                    <span asp-validation-for="ReminderRuleId"></span>
+                </div>
+            </div>
+            <div class="form-group row" id="">
+                <div class="col-md-3">
+                    <nop-label asp-for="NumberOfMessagesPerCustomer" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="NumberOfMessagesPerCustomer" asp-required="true" />
+                    <span asp-validation-for="NumberOfMessagesPerCustomer"></span>
+                </div>
+            </div>
+            <div class="form-group row" id="">
+                <div class="col-md-3">
+                    <nop-label asp-for="ConditionMetLaterThan" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="ConditionMetLaterThan" asp-required="true" />
+                    <span asp-validation-for="ConditionMetLaterThan"></span>
+                </div>
+            </div>                        \
+            <div class="form-group row" id="">
+                <div class="col-md-3">
+                    <nop-label asp-for="ConditionMetEarlierThan" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="ConditionMetEarlierThan" asp-required="true" />
+                    <span asp-validation-for="ConditionMetEarlierThan"></span>
+                </div>
+            </div>
+            <div class="form-group row" id="">
+                <div class="col-md-3">
+                    <nop-label asp-for="IntervalBetweenMessages" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="IntervalBetweenMessages" asp-required="true" />
+                    <span asp-validation-for="IntervalBetweenMessages"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
