@@ -71,7 +71,7 @@ namespace Nop.Plugin.Misc.Reminders
         /// <summary>
         /// Gets a name, type and period (in seconds) of the auto synchronization task
         /// </summary>
-        //public static (string Name, string Type, int Period) SynchronizationTask =>
-        //    ("Synchronization (PayPal Zettle plugin)", "Nop.Plugin.Misc.Zettle.Services.ZettleSyncTask", 28800);
+        public static (string Name, string Type, int Period) ReminderTask =>
+            ("Reminder Task", "Nop.Plugin.Misc.Reminders.Services.ReminderTask", 3600);
     }
 }

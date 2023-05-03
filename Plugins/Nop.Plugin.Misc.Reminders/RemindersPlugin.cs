@@ -139,18 +139,18 @@ namespace Nop.Plugin.Misc.Reminders
                 //ClearRecordsOnChangeCredentials = true
             });
 
-            //if (await _scheduleTaskService.GetTaskByTypeAsync(ZettleDefaults.SynchronizationTask.Type) is null)
-            //{
-            //    await _scheduleTaskService.InsertTaskAsync(new()
-            //    {
-            //        Enabled = false,
-            //        StopOnError = false,
-            //        LastEnabledUtc = DateTime.UtcNow,
-            //        Name = ZettleDefaults.SynchronizationTask.Name,
-            //        Type = ZettleDefaults.SynchronizationTask.Type,
-            //        Seconds = ZettleDefaults.SynchronizationTask.Period
-            //    });
-            //}
+            if (await _scheduleTaskService.GetTaskByTypeAsync(RemindersDefault.ReminderTask.Type) is null)
+            {
+                await _scheduleTaskService.InsertTaskAsync(new()
+                {
+                    Enabled = true,
+                    StopOnError = false,
+                    LastEnabledUtc = DateTime.UtcNow,
+                    Name = RemindersDefault.ReminderTask.Name,
+                    Type = RemindersDefault.ReminderTask.Type,
+                    Seconds = RemindersDefault.ReminderTask.Period
+                });
+            }
 
             await _localizationService.AddOrUpdateLocaleResourceAsync(new Dictionary<string, string>
             {
