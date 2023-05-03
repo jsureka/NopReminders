@@ -10,7 +10,6 @@ namespace Nop.Plugin.Misc.Reminders.Domain
     public class Reminder : BaseEntity
     {
         public Reminder() { 
-            ReminderMessageTemplate = new ReminderMessageTemplate();
         }
         /// <summary>
         /// Gets or sets enabled status
@@ -55,11 +54,9 @@ namespace Nop.Plugin.Misc.Reminders.Domain
         /// <summary>
         /// Gets or sets interval between messages
         /// </summary>
-        public int? IntervalBetweenMessages { get; set; }
+        public int IntervalBetweenMessages { get; set; }
 
-        public int? ReminderMessageTemplateId { get; set; }
-
-        public ReminderMessageTemplate ReminderMessageTemplate { get; set; }
+        public int ReminderMessageTemplateId { get; set; }
 
     }
 }

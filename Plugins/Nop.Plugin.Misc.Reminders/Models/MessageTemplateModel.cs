@@ -11,8 +11,8 @@ namespace Nop.Plugin.Misc.Reminders.Models
 {
     public record MessageTemplateModel : BaseNopEntityModel
     {
+
         public string MessageTemplateName { get; set; }
-        public string SystemName { get; set; }
         public string BccEmailAddresses { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }

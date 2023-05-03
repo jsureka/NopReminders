@@ -38,10 +38,9 @@
             },
             new ColumnProperty(nameof(RemindersModel.Id))
             {
-            Title = T("Admin.Common.Edit").Text,
-            Width = "200",
-            ClassName =  NopColumnClassDefaults.Button,
-            Render = new RenderButtonsInlineEdit()
+            Title = T("Update").Text,
+            Render = new RenderCustom("renderColumnEdit"),
+            Width = "100"
             },
             new ColumnProperty(nameof(RemindersModel.Id))
             {
@@ -58,7 +57,11 @@
         </div>
     </div>
 </form>
-
+<script>
+    function renderColumnEdit(data, type, row, meta) {
+        return '<a href="@Url.Action("Edit", "RemindersAdmin")/' + data + '" class="btn btn-default"><i class="fas fa-pencil-alt"></i>@T("Admin.Common.Edit").Text</a>';
+    }
+</script>
 <nop-alert asp-alert-id="delete-selected-failed" />
 <nop-alert asp-alert-id="nothing-selected-alert" />
 <nop-alert asp-alert-id="sync-failed" />

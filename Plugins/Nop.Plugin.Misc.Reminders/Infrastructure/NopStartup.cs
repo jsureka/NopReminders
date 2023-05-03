@@ -28,6 +28,7 @@ namespace Nop.Plugin.Misc.Reminders.Infrastructure
         {
             services.AddScoped<IRemindersService, RemindersService>();
             services.AddScoped<IRemindersModelFactory, RemindersModelFactory>();
+            services.AddScoped<IReminderMessageTemplateService, ReminderMessageTemplateService>();
         }
     }
 }

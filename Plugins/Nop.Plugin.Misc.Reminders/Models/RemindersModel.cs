@@ -15,12 +15,12 @@ namespace Nop.Plugin.Misc.Reminders.Models
         {
             MessageTemplateModel = new MessageTemplateModel();
         }
-
+        public RemindersModel(MessageTemplateModel messageTemplateModel)
+        {
+            MessageTemplateModel = messageTemplateModel;
+        }
         [NopResourceDisplayName("Plugins.Misc.Reminders.Fields.Name")]
         public string Name { get; set; }
-
-        [NopResourceDisplayName("Plugins.Misc.Reminders.Fields.MessageTemplateName")]
-        public string MessageTemplateName { get; set; }
 
         [NopResourceDisplayName("Plugins.Misc.Reminders.Fields.Enabled")]
         public bool Enabled { get; set; }
@@ -43,10 +43,12 @@ namespace Nop.Plugin.Misc.Reminders.Models
         public int ConditionMetEarlierThan { get; set; }
 
         [NopResourceDisplayName("Plugins.Misc.Reminders.Fields.IntervalBetweenMessages")]
-        public int? IntervalBetweenMessages { get; set; }
+        public int IntervalBetweenMessages { get; set; }
 
         public MessageTemplateModel MessageTemplateModel { get; set; }
    //     public IList<int>? ReminderExcludedCustomerIds { get; set; }
+
+        public string? MessageTemplateName { get; set; }
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Core;
@@ -16,6 +17,7 @@ using Nop.Plugin.Misc.Reminders.Domain;
 using Nop.Plugin.Misc.Reminders.Factories;
 using Nop.Plugin.Misc.Reminders.Models;
 using Nop.Plugin.Misc.Reminders.Service;
+using Nop.Plugin.Misc.Reminders.Services;
 using Nop.Services.Catalog;
 using Nop.Services.Configuration;
 using Nop.Services.Directory;
@@ -57,6 +59,7 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
         private readonly IRemindersModelFactory _remindersModelFactory;
         private readonly IEmailAccountService _emailAccountService;
         private readonly IMessageTokenProvider _messageTokenProvider;
+        private readonly IReminderMessageTemplateService _reminderMessageTemplateService;
 
         #endregion
 
@@ -76,7 +79,8 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
             IRemindersService remindersService,
             IRemindersModelFactory remindersModelFactory,
             IEmailAccountService emailAccountService,
-            IMessageTokenProvider messageTokenProvider
+            IMessageTokenProvider messageTokenProvider,
+            IReminderMessageTemplateService reminderMessageTemplateService
             )
         {
             _currencySettings = currencySettings;
@@ -94,6 +98,7 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
             _remindersModelFactory = remindersModelFactory;
             _emailAccountService = emailAccountService;
             _messageTokenProvider = messageTokenProvider;
+            _reminderMessageTemplateService = reminderMessageTemplateService;
         }
 
         #endregion
@@ -167,6 +172,15 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
             {
                 return await Create();
             }
+            var template = new ReminderMessageTemplate
+            {
+                BccEmailAddresses = remindersModel.MessageTemplateModel.BccEmailAddresses,
+                EmailAccountId = remindersModel.MessageTemplateModel.EmailAccountId,
+                Body = remindersModel.MessageTemplateModel.Body,
+                Subject = remindersModel.MessageTemplateModel.Subject,
+                MessageTemplateName = remindersModel.MessageTemplateModel.MessageTemplateName
+            };
+            await _reminderMessageTemplateService.InsertReminderMessageTemplateAsync(template);
             var reminder = new Reminder
             {
                 Enabled = remindersModel.Enabled,
@@ -177,14 +191,7 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
                 IntervalBetweenMessages = remindersModel.IntervalBetweenMessages,
                 StoreId = int.Parse(remindersModel.StoreId),
                 ReminderRuleId = int.Parse(remindersModel.ReminderRuleId),
-                ReminderMessageTemplate = 
-                {
-                    BccEmailAddresses = remindersModel.MessageTemplateModel.BccEmailAddresses,
-                    EmailAccountId = remindersModel.MessageTemplateModel.EmailAccountId,
-                    Body = remindersModel.MessageTemplateModel.Body,
-                    Subject = remindersModel.MessageTemplateModel.Subject,
-                    MessageTemplateName = remindersModel.MessageTemplateModel.MessageTemplateName
-                }
+                ReminderMessageTemplateId = template.Id
             };
             await _remindersService.InsertReminderAsync(reminder);
             _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Admin.Plugins.Saved"));
@@ -200,6 +207,7 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
             var reminder = await _remindersService.GetReminderByIdAsync(id);
             if (reminder == null)
                 return RedirectToAction("Configure");
+
             var reminderRules = SeedDataReminderRule.Entities;
             var model = new RemindersModel
             {
@@ -213,6 +221,24 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
                 StoreId = reminder.StoreId.ToString(),
                 NumberOfMessagesPerCustomer = reminder.NumberOfMessagesPerCustomer,
             };
+            var messageTemplate = await _reminderMessageTemplateService.GetReminderMessageTemplateByIdAsync(reminder.ReminderMessageTemplateId);
+            model.MessageTemplateModel = new MessageTemplateModel
+            {
+                Subject = messageTemplate.Subject,
+                BccEmailAddresses = messageTemplate.BccEmailAddresses,
+                Body = messageTemplate.Body,
+                EmailAccountId = messageTemplate.EmailAccountId,
+                MessageTemplateName = messageTemplate.MessageTemplateName,
+                Id = messageTemplate.Id,
+            };
+            var emails = await _emailAccountService.GetAllEmailAccountsAsync();
+            model.MessageTemplateModel.AllowedTokens = "";
+            model.MessageTemplateModel.AvailableEmailAccounts = emails;
+            var allowedTokens = await _messageTokenProvider.GetListOfAllowedTokensAsync();
+            foreach (var token in allowedTokens)
+            {
+                model.MessageTemplateModel.AllowedTokens += token;
+            }
             var activeStores = await _storeService.GetAllStoresAsync();
             if (activeStores?.Any() is true)
             {
@@ -227,6 +253,7 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
                 Text = rule.Name,
                 Value = rule.Id.ToString(),
             }).ToList();
+
             return View("~/Plugins/Misc.Reminders/Views/Edit.cshtml", model);
         }
 
@@ -240,6 +267,7 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
             var reminder = await _remindersService.GetReminderByIdAsync(remindersModel.Id);
             var messageTemplate = new ReminderMessageTemplate()
             {
+                Id = remindersModel.MessageTemplateModel.Id,
                 BccEmailAddresses = remindersModel.MessageTemplateModel.BccEmailAddresses,
                 EmailAccountId = remindersModel.MessageTemplateModel.EmailAccountId,
                 Body = remindersModel.MessageTemplateModel.Body,
@@ -248,6 +276,7 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
             };
             if (reminder == null)
                 return RedirectToAction("Configure");
+            await _reminderMessageTemplateService.UpdateReminderMessageTemplateByIdAsync(messageTemplate);
             reminder.Enabled = remindersModel.Enabled;
             reminder.Name = remindersModel.Name;
             reminder.NumberOfMessagesPerCustomer = remindersModel.NumberOfMessagesPerCustomer;
@@ -256,12 +285,11 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
             reminder.IntervalBetweenMessages = remindersModel.IntervalBetweenMessages;
             reminder.StoreId = int.Parse(remindersModel.StoreId);
             reminder.ReminderRuleId = int.Parse(remindersModel.ReminderRuleId);
-            reminder.ReminderMessageTemplate = messageTemplate;
             await _remindersService.UpdateReminderByIdAsync(reminder);
 
             ViewBag.RefreshPage = true;
 
-            return View("~/Plugins/Misc.Reminders/Views/Edit.cshtml", remindersModel);
+            return await Configure();
         }
 
         [HttpPost]
@@ -273,7 +301,8 @@ namespace Nop.Plugin.Misc.Reminders.Controllers
             var reminder = await _remindersService.GetReminderByIdAsync(id);
             if (reminder == null)
                 return RedirectToAction("Configure");
-
+            var messageTemplate = await _reminderMessageTemplateService.GetReminderMessageTemplateByIdAsync(reminder.ReminderMessageTemplateId);
+            await _reminderMessageTemplateService.DeleteReminderMessageTemplateByIdAsync(messageTemplate);
             await _remindersService.DeleteReminderByIdAsync(reminder);
 
             return new NullJsonResult();
